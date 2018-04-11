@@ -31,15 +31,15 @@ unique3, NCBEFORE   = np.unique(NCbefore,   return_inverse=True)
 unique4, FPLENGHT   = np.unique(FPlength,   return_inverse=True)
 unique5, CYCLEVAR   = np.unique(CycleVar,   return_inverse=True)
 unique6, EXITSTATUS = np.unique(ExitStatus, return_inverse=True)
-FinalDataframe = pd.DataFrame(data={'Country': COUNTRY, 'Age': Age, 'NumBMI': NumBMI, 'Pill': PILL, 'NCbefore': NCBEFORE, 'FPlength': FPLENGHT, 'Weight': Weight, 'CycleVar': CYCLEVAR, 'TempLogFreq': TempLogFreq, 'SexLogFreq': SexLogFreq, 'CyclesTrying': CyclesTrying, 'AnovCycles': AnovCycles})
+FinalDataframe = pd.DataFrame(data={'CyclesTrying': CyclesTrying, 'TempLogFreq': TempLogFreq, 'SexLogFreq': SexLogFreq, 'AnovCycles': AnovCycles, 'NCbefore': NCBEFORE, 'CycleVar': CYCLEVAR, 'Pill': PILL, 'FPlength': FPLENGHT})#, 'NumBMI': NumBMI,'Country': COUNTRY, 'Age': Age, 'Weight': Weight})
 y = SkimmedDataframe['DaysTrying']
-X_train, X_test, y_train, y_test = train_test_split(FinalDataframe, y, test_size=0.2)
+X_train, X_test, y_train, y_test = train_test_split(FinalDataframe, y, test_size=0.1)
 ########################################################
 
 
 ############## Optimization GridSearchCV ###############
-param_grid = {'max_depth': [4, 6],'min_samples_leaf': [3, 5, 9, 17, 25],'learning_rate': [0.1, 0.05, 0.02, 0.01, 0.005],}
-optimization = ensemble.GradientBoostingRegressor(n_estimators=500)
+param_grid = {'n_estimators': [500,1000,2000],'max_depth': [3,4,6,8],'min_samples_split': [3,5,7,9],'learning_rate': [0.2, 0.1, 0.05, 0.02, 0.01],}
+optimization = ensemble.GradientBoostingRegressor(loss='ls')
 gs_cv = GridSearchCV(optimization, param_grid, n_jobs=4).fit(X_train, y_train)
 print(gs_cv.best_params_)
 ########################################################

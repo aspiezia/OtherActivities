@@ -10,34 +10,22 @@ from sklearn.ensemble.partial_dependence import plot_partial_dependence
 ################### Creating Dataset ###################
 InitialDataframe = pd.read_csv('anafile_challenge_170522.csv', names=['Country', 'Age', 'NumBMI', 'Pill', 'NCbefore', 'FPlength', 'Weight', 'CycleVar', 'TempLogFreq', 'SexLogFreq', 'DaysTrying', 'CyclesTrying', 'ExitStatus', 'AnovCycles'], skiprows=1)
 SkimmedDataframe = InitialDataframe.loc[(InitialDataframe['ExitStatus']==' Pregnant')]
-Country       = SkimmedDataframe['Country']
-Age           = SkimmedDataframe['Age']
-NumBMI        = SkimmedDataframe['NumBMI']
 Pill          = SkimmedDataframe['Pill']
 NCbefore      = SkimmedDataframe['NCbefore']
 FPlength      = SkimmedDataframe['FPlength']
-Weight        = SkimmedDataframe['Weight']
 CycleVar      = SkimmedDataframe['CycleVar']
-TempLogFreq   = SkimmedDataframe['TempLogFreq']
-SexLogFreq    = SkimmedDataframe['SexLogFreq']
-DaysTrying    = SkimmedDataframe['DaysTrying']
-CyclesTrying  = SkimmedDataframe['CyclesTrying']
-ExitStatus    = SkimmedDataframe['ExitStatus']
-AnovCycles    = SkimmedDataframe['AnovCycles']
-unique1, COUNTRY    = np.unique(Country,    return_inverse=True)
-unique2, PILL       = np.unique(Pill,       return_inverse=True)
-unique3, NCBEFORE   = np.unique(NCbefore,   return_inverse=True)
-unique4, FPLENGHT   = np.unique(FPlength,   return_inverse=True)
-unique5, CYCLEVAR   = np.unique(CycleVar,   return_inverse=True)
-unique6, EXITSTATUS = np.unique(ExitStatus, return_inverse=True)
-FinalDataframe = pd.DataFrame(data={'Country': COUNTRY, 'Age': Age, 'NumBMI': NumBMI, 'Pill': PILL, 'NCbefore': NCBEFORE, 'FPlength': FPLENGHT, 'Weight': Weight, 'CycleVar': CYCLEVAR, 'TempLogFreq': TempLogFreq, 'SexLogFreq': SexLogFreq, 'CyclesTrying': CyclesTrying, 'AnovCycles': AnovCycles})
+_, PILL       = np.unique(Pill,       return_inverse=True)
+_, NCBEFORE   = np.unique(NCbefore,   return_inverse=True)
+_, FPLENGHT   = np.unique(FPlength,   return_inverse=True)
+_, CYCLEVAR   = np.unique(CycleVar,   return_inverse=True)
+FinalDataframe = pd.DataFrame(data={'CyclesTrying': SkimmedDataframe['CyclesTrying'], 'TempLogFreq': SkimmedDataframe['TempLogFreq'], 'SexLogFreq': SkimmedDataframe['SexLogFreq'], 'AnovCycles': SkimmedDataframe['AnovCycles'], 'NCbefore': NCBEFORE, 'CycleVar': CYCLEVAR, 'Pill': PILL, 'FPlength': FPLENGHT})
 y = SkimmedDataframe['DaysTrying']
-X_train, X_test, y_train, y_test = train_test_split(FinalDataframe, y, test_size=0.2, random_state=123456)
+X_train, X_test, y_train, y_test = train_test_split(FinalDataframe, y, test_size=0.1)
 ########################################################
 
 
 ################### Fitting TheModel ###################
-params = {'n_estimators': 500, 'max_depth': 4, 'min_samples_split': 3,'learning_rate': 0.02, 'loss': 'ls'}
+params = {'n_estimators': 1000, 'max_depth': 3, 'min_samples_split': 5,'learning_rate': 0.01, 'loss': 'ls'}
 clf = ensemble.GradientBoostingRegressor(**params)
 clf.fit(X_train,y_train)
 mae = mean_absolute_error(y_test, clf.predict(X_test))
@@ -71,13 +59,3 @@ plt.xlabel('Number of estimators')
 plt.ylabel('Error')
 plt.savefig('DeviancePlot.pdf')
 plt.show()
-
-#### Plot Partial Dependence ####
-#plot_partial_dependence(clf, X_train, features=[0],   feature_names=X_train.columns, n_jobs=3, grid_resolution=50, n_cols=1)
-#plot_partial_dependence(clf, X_train, features=[1],   feature_names=X_train.columns, n_jobs=3, grid_resolution=50, n_cols=1)
-#plot_partial_dependence(clf, X_train, features=[2],   feature_names=X_train.columns, n_jobs=3, grid_resolution=50, n_cols=1)
-#plot_partial_dependence(clf, X_train, features=[3,4,5],   feature_names=X_train.columns, n_jobs=3, grid_resolution=50, n_cols=3)
-#plot_partial_dependence(clf, X_train, features=[6,7,8],   feature_names=X_train.columns, n_jobs=3, grid_resolution=50, n_cols=3)
-#plot_partial_dependence(clf, X_train, features=[9,10,11], feature_names=X_train.columns, n_jobs=3, grid_resolution=50, n_cols=3)
-#plt.show()
-########################################################

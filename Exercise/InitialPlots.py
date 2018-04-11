@@ -9,7 +9,7 @@ from sklearn.ensemble.partial_dependence import plot_partial_dependence
 
 ################### Creating Dataset ###################
 InitialDataframe = pd.read_csv('anafile_challenge_170522.csv', names=['Country', 'Age', 'NumBMI', 'Pill', 'NCbefore', 'FPlength', 'Weight', 'CycleVar', 'TempLogFreq', 'SexLogFreq', 'DaysTrying', 'CyclesTrying', 'ExitStatus', 'AnovCycles'], skiprows=1)
-SkimmedDataframe = InitialDataframe.loc[(InitialDataframe['ExitStatus']==' Pregnant')]
+SkimmedDataframe = InitialDataframe#.loc[(InitialDataframe['ExitStatus']==' Pregnant')]
 Country       = SkimmedDataframe['Country']
 Age           = SkimmedDataframe['Age']
 NumBMI        = SkimmedDataframe['NumBMI']
@@ -30,16 +30,16 @@ unique3, NCBEFORE   = np.unique(NCbefore,   return_inverse=True)
 unique4, FPLENGHT   = np.unique(FPlength,   return_inverse=True)
 unique5, CYCLEVAR   = np.unique(CycleVar,   return_inverse=True)
 unique6, EXITSTATUS = np.unique(ExitStatus, return_inverse=True)
-FinalDataframe = pd.DataFrame(data={'Country': COUNTRY, 'Age': Age, 'NumBMI': NumBMI, 'Pill': PILL, 'NCbefore': NCBEFORE, 'FPlength': FPLENGHT, 'Weight': Weight, 'CycleVar': CYCLEVAR, 'TempLogFreq': TempLogFreq, 'SexLogFreq': SexLogFreq, 'CyclesTrying': CyclesTrying, 'ExitStatus': EXITSTATUS, 'AnovCycles': AnovCycles, 'DaysTrying': DaysTrying})
+FinalDataframe = pd.DataFrame(data={'Country': COUNTRY, 'Age': Age, 'NumBMI': NumBMI, 'Pill': PILL, 'NCbefore': NCBEFORE, 'FPlength': FPLENGHT, 'Weight': Weight, 'CycleVar': CYCLEVAR, 'TempLogFreq': TempLogFreq, 'SexLogFreq': SexLogFreq, 'CyclesTrying': CyclesTrying, 'NCyclesTrying': CyclesTrying/DaysTrying, 'ExitStatus': EXITSTATUS, 'AnovCycles': AnovCycles, 'DaysTrying': DaysTrying})
 ########################################################
 
 
 ################## Plotting Variables ##################
-plots_tot = 14
-plots_name = ['Country', 'Age', 'NumBMI', 'Pill', 'NCbefore', 'FPlength', 'Weight', 'CycleVar', 'TempLogFreq', 'SexLogFreq', 'DaysTrying', 'CyclesTrying', 'ExitStatus', 'AnovCycles']
-BIN =  [88,60,80,3,2,3,100,2,100,100,100,40,3,12]
-XMAX = [87,59,80,2,1,2,300,1,1  ,1,  999,39,2,11]
-YMAX = [20000,1800,3000,14000,18000,14000,3000,12000,600,4500,2000,5000,10000,18000]
+plots_tot = 15
+plots_name = ['Country', 'Age', 'NumBMI', 'Pill', 'NCbefore', 'FPlength', 'Weight', 'CycleVar', 'TempLogFreq', 'SexLogFreq', 'DaysTrying', 'CyclesTrying', 'ExitStatus', 'AnovCycles', 'NCyclesTrying']
+BIN =  [88,   36,  80,   3,   2,    3,    100, 2,    100,100, 100, 40,  3,    12,   200]
+XMAX = [87,   59,  80,   2,   1,    2,    300, 1,    1  ,1,   999, 39,  2,    11,   0.1]
+YMAX = [20000,1800,3000,14000,18000,14000,3000,12000,600,4500,2000,5000,10000,18000,2000]
 i=0
 while i < plots_tot:
     print('%i. Plotting %s' % (i,plots_name[i]))
@@ -68,7 +68,7 @@ while i < plots_tot:
         ax.set_xticks(range(len(unique6)))
         ax.set_xticklabels(unique6)
     plt.figure(i+1)
-    plt.hist(FinalDataframe[plots_name[i]], bins=BIN[i], normed=0, facecolor='green')
+    plt.hist(FinalDataframe[plots_name[i]], bins=BIN[i], normed=0, facecolor='green', histtype='stepfilled', edgecolor='green')
     plt.xlabel(plots_name[i])
     plt.ylabel('Women')
     plt.title('')
@@ -83,14 +83,14 @@ while i < plots_tot:
 
 ############# Plotting Correlation Matrix ##############
 plt.figure(15)#, figsize=(40, 20))
-corr_matrix = np.corrcoef([DaysTrying, COUNTRY, Age, NumBMI, PILL, NCBEFORE, FPLENGHT, Weight, CYCLEVAR, TempLogFreq, SexLogFreq, CyclesTrying, AnovCycles])
+corr_matrix = np.corrcoef([DaysTrying, COUNTRY, Age, NumBMI, PILL, NCBEFORE, FPLENGHT, Weight, CYCLEVAR, TempLogFreq, SexLogFreq, CyclesTrying, CyclesTrying/DaysTrying, AnovCycles])
 plt.matshow(corr_matrix, cmap=plt.cm.get_cmap('coolwarm'), vmin=-1)
-for i in range(0,13):
-    for j in range(0,13):
+for i in range(0,14):
+    for j in range(0,14):
         plt.text(j, i, '%.2f' % corr_matrix[i,j], ha='center', va='center',fontsize=7)
-labels = ['DaysTrying', 'Country', 'Age', 'NumBMI', 'Pill', 'NCbefore', 'FPlength', 'Weight', 'CycleVar', 'TempLogFreq', 'SexLogFreq', 'CyclesTrying', 'AnovCycles']
-plt.xticks(range(0,13),labels, rotation='vertical', fontsize=8)
-plt.yticks(range(0,13),labels, fontsize=8)
+labels = ['DaysTrying', 'Country', 'Age', 'NumBMI', 'Pill', 'NCbefore', 'FPlength', 'Weight', 'CycleVar', 'TempLogFreq', 'SexLogFreq', 'CyclesTrying', 'NCyclesTrying', 'AnovCycles']
+plt.xticks(range(0,14),labels, rotation='vertical', fontsize=8)
+plt.yticks(range(0,14),labels, fontsize=8)
 plt.colorbar()
 plt.savefig('CorrelationMatrix.pdf')
 #plt.show()
@@ -110,5 +110,6 @@ print('Correlation DaysTrying-CYCLEVAR     = %.2f' % np.corrcoef(DaysTrying, CYC
 print('Correlation DaysTrying-TempLogFreq  = %.2f' % np.corrcoef(DaysTrying, TempLogFreq)[0][1])
 print('Correlation DaysTrying-SexLogFreq   = %.2f' % np.corrcoef(DaysTrying, SexLogFreq)[0][1])
 print('Correlation DaysTrying-CyclesTrying = %.2f' % np.corrcoef(DaysTrying, CyclesTrying)[0][1])
+print('Correlation DaysTrying-NCyclesTrying= %.2f' % np.corrcoef(DaysTrying, CyclesTrying/DaysTrying)[0][1])
 print('Correlation DaysTrying-AnovCycles   = %.2f' % np.corrcoef(DaysTrying, AnovCycles)[0][1])  
 print('')
