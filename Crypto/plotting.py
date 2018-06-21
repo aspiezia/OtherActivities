@@ -32,8 +32,8 @@ def plotter(figure, name, MIN, MAX):
 for i in range(6,12):
     plotter(i,'MktCap',pow(10,i),pow(10,i+1))
 
-for i in range(4,11):
-    plotter(i,'Volume',pow(10,i),pow(10,i+1))
+for i in range(3,12,3):
+    plotter(i,'Volume',pow(10,i),pow(10,i+3))
 
 for i in range(0,5):
     plotter(i,'Close',pow(10,i),pow(10,i+1))
@@ -41,6 +41,6 @@ for i in range(0,5):
 for i in range(5,12):
     plotter(i,'Norm',pow(10,i),pow(10,i+1))
 
-for i in range(4,11):
-    plotter(i,'Diff',i*0.1,(i+1)*0.1)
+for i in range(0,2):
+    plotter(i,'Diff',i*0.7,(i+1)*0.7)
 
